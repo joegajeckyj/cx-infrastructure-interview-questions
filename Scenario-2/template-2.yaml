@@ -104,14 +104,6 @@ Resources:
     Properties:
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
-        - AttributeName: City
-          AttributeType: S
-        - AttributeName: Country
-          AttributeType: S
-        - AttributeName: FirstName
-          AttributeType: S
-        - AttributeName: LastName
-          AttributeType: S
         - AttributeName: PhoneNumber
           AttributeType: S
       KeySchema:
