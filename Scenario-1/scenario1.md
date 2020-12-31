@@ -10,3 +10,13 @@ Aims:
 - Create relevant SSM paramaters and outputs
 - Document issues found/best practices applied
 ```
+```
+Answers:
+- Added code to S3 bucket and created SSM parameter
+- Used least privilages for lambda serverless function
+- Added SSM parametes of S3 bucket and SSM key value
+-   - No Transform template added
+    - Corrected Ref! rLambdaFunctionRole Ref! for ARN attribute
+    - Circular dependancy on Alarms
+    - Added AutoPublishAlias and runtime
+```
