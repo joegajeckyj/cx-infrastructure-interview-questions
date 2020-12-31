@@ -52,7 +52,7 @@ Resources:
                   - 'logs:CreateLogGroup'
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
-                Resource: 'arn:aws:logs:*:*'
+                Resource: 'arn:aws:logs:*:*:*'
 
   rLambdaFunction:
     Type: 'AWS::Serverless::Function'
