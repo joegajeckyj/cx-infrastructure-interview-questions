@@ -19,4 +19,5 @@ Answers:
     - Corrected Ref! rLambdaFunctionRole Ref! for ARN attribute
     - Circular dependancy on Alarms
     - Added AutoPublishAlias and runtime
+    - Updated RoleName 
 ```
