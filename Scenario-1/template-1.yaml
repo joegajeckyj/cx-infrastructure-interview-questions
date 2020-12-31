@@ -73,37 +73,41 @@ Resources:
 #        - !Ref rLambdaFunctionAliasErrorAlarm
 #        - !Ref rLambdaFunctionVersionErrorAlarm
 
- # rLambdaFunctionAliasErrorAlarm:
- #   Type: 'AWS::CloudWatch::Alarm'
- #   Properties:
- #     AlarmDescription: Lambda Function Error > 0
- #     ComparisonOperator: GreaterThanThreshold
- #     Dimensions:
- #       - Name: Resource
- #         Value: !Sub '${rLambdaFunction}:${pFunctionAliasName}'
- #       - Name: FunctionName
- #         Value: !Ref rLambdaFunction
- #     EvaluationPeriods: 1
- #     MetricName: Errors
- #     Namespace: AWS/Lambda
- #     Period: 300
- #     Statistic: Sum
- #     Threshold: 0
+  rLambdaFunctionAliasErrorAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      AlarmDescription: Lambda Function Error > 0
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: Resource
+          Value: !Sub '${rLambdaFunction}:${pFunctionAliasName}'
+        - Name: FunctionName
+          Value: !Ref rLambdaFunction
+      EvaluationPeriods: 1
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Period: 300
+      Statistic: Sum
+      Threshold: 0
 
- # rLambdaFunctionVersionErrorAlarm:
- #   Type: 'AWS::CloudWatch::Alarm'
- #   Properties:
- #     AlarmDescription: Lambda Function Error > 0
- #     ComparisonOperator: GreaterThanThreshold
- #     Dimensions:
- #       - Name: Resource
- #         Value: !GetAtt rLambdaFunction.Arn
- #       - Name: FunctionName
- #         Value: !Ref rLambdaFunction
- #     EvaluationPeriods: 1
- #     MetricName: Errors
- #     Namespace: AWS/Lambda
- #     Period: 300
- #     Statistic: Sum
- #     Threshold: 0
-#Outputs:
+  rLambdaFunctionVersionErrorAlarm:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      AlarmDescription: Lambda Function Error > 0
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: Resource
+          Value: !GetAtt rLambdaFunction.Arn
+        - Name: FunctionName
+          Value: !Ref rLambdaFunction
+      EvaluationPeriods: 1
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Period: 300
+      Statistic: Sum
+      Threshold: 0
+Outputs:
+  oLambdaFunctionName:
+    Description: Name of the Lambda Function
+    Value: !Ref rLambdaFunction
+
