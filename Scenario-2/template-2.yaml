@@ -11,28 +11,15 @@ Metadata:
       - Label:
           default: Lambda configuration
         Parameters:
-          - pArtifactS3BucketName
           - pArtifactS3Key
           - pLogLevel
     ParameterLabels:
-      pArtifactS3BucketName:
-        default: What is the bucket name of the source code?
       pArtifactS3Key:
         default: What is the file name of the source code?
       pLogLevel:
         default: What level of logging for the Lambda?
 
 Parameters:
-
-  pArtifactS3BucketName:
-    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-.]*[0-9a-zA-Z])*$
-    ConstraintDescription: bucket name can include numbers, lowercase
-      letters, uppercase letters, periods (.), and hyphens (-). It cannot start or
-      end with a hyphen (-).
-    Description: S3 bucket name for the Cfn assets. bucket name
-      can include numbers, lowercase letters, uppercase letters, and hyphens (-).
-      It cannot start or end with a hyphen (-).
-    Type: String
 
   pArtifactS3Key:
     AllowedPattern: ^[0-9a-zA-Z-\/\.]*$
@@ -72,18 +59,44 @@ Resources:
             Action:
               - sts:AssumeRole
       Path: /
-      Policies:
       # Add policy to read dynamodb
+      Policies:
+        - PolicyName: allow-dynamodb-read
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                - 'dynamodb:BatchGetItem'
+                - 'dynamodb:Describe*'
+                - 'dynamodb:List*'
+                - 'dynamodb:GetItem'
+                - 'dynamodb:Query'
+                - 'dynamodb:Scan'
+                Resource: !GetAtt rCustomerInformationDynamoDb.Arn
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
 
   # Complete Lambda resource based on requirements
   rGetCustomerInformationAppFunction:
-    Type: AWS::Serverless::Function
+    Type: 'AWS::Serverless::Function'
     Properties:
+      AutoPublishAlias: GetCustomerInformationAppFunctionRole
+      Handler: get_item.lambda_handler
+      Runtime: python3.7
+      Environment:
+        Variables:
+          LOG_LEVEL: !Ref pLogLevel
+          TABLE_NAME: CustomerInfoTable
+          TABLE_REGION: !Ref AWS::Region
       CodeUri:
-        Bucket: # Bucket Name from parameters
-        Key: # Key from parameters
+        Bucket:   
+            Fn::ImportValue: "test-stack-S3BucketName"
+        Key: !Ref pArtifactS3Key
+      Role: !GetAtt rCustomerInformationDynamoDb.Arn
+      DeploymentPreference:
+        Type: AllAtOnce
+      Timeout: 10
 
   # Complete DynamoDb resource for string attribute "PhoneNumber"
   rCustomerInformationDynamoDb:
@@ -91,17 +104,47 @@ Resources:
     DeletionPolicy: Delete
     Properties:
       BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: 'N'
+        - AttributeName: City
+          AttributeType: S
+        - AttributeName: Country
+          AttributeType: S
+        - AttributeName: FirstName
+          AttributeType: S
+        - AttributeName: LastName
+          AttributeType: S
+        - AttributeName: PhoneNumber
+          AttributeType: S
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+        - AttributeName: City
+          KeyType: RANGE
+        - AttributeName: Country
+          KeyType: RANGE
+        - AttributeName: FirstName
+          KeyType: RANGE
+        - AttributeName: LastName
+          KeyType: RANGE
+        - AttributeName: PhoneNumber
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: '5'
+        WriteCapacityUnits: '5'
+      TableName: CustomerInfoTable
 
 Outputs:
 
   GetCustomerInformationAppFunctionRole:
     Description: IAM function role Arn for the Get Customer Information App Function
-    Value: # Complete me
+    Value: !Ref rGetCustomerInformationAppFunctionRole
 
   GetCustomerInformationLambdaFunction:
     Description: Arn of Get Customer information Lambda Function
-    Value: # Complete me
+    Value: !Ref rGetCustomerInformationAppFunction
 
   CustomerInformationDynamoDb:
     Description: Customer Information Dynamo DB Table name
-    Value: # Complete me
+    Value: !GetAtt rCustomerInformationDynamoDb.Arn

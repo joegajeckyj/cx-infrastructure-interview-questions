@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+
+  pArtifactS3BucketName:
+      AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-.]*[0-9a-zA-Z])*$
+      ConstraintDescription: bucket name can include numbers, lowercase
+        letters, uppercase letters, periods (.), and hyphens (-). It cannot start or
+        end with a hyphen (-).
+      Description: S3 bucket name for the Cfn assets. bucket name
+        can include numbers, lowercase letters, uppercase letters, and hyphens (-).
+        It cannot start or end with a hyphen (-).
+      Type: String
+
+Resources:
+  S3Bucket:
+      Type: 'AWS::S3::Bucket'
+      Properties:
+        BucketName: !Ref pArtifactS3BucketName
+      DeletionPolicy: Delete
+
+Outputs:
+  S3BucketName:
+    Value: !Ref pArtifactS3BucketName
+    Description: Name of S3 bucket
