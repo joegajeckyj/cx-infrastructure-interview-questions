@@ -19,20 +19,20 @@ Parameters:
   pLogLevel:
     Description: Enter the log level for the lambda function.
     Type: String
-    Default: Debug
+    Default: DEBUG
     AllowedValues:
-      - Debug
-      - Info
-      - Warning
-      - Error
-      - Critical
+      - DEBUG
+      - INFO
+      - WARNING
+      - ERROR
+      - CRITICAL
 
 Resources:
   rLambdaFunctionRole:
     Type: 'AWS::IAM::Role'
     Properties:
       AssumeRolePolicyDocument:
-        Version: 2012-10-17
+        Version: '2012-10-17'
         Statement:
           - Effect: Allow
             Principal:
@@ -45,7 +45,7 @@ Resources:
       Policies:
         - PolicyName: allow-logging
           PolicyDocument:
-            Version: 2012-10-17
+            Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action:
