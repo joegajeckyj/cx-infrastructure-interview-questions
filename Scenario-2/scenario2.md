@@ -16,15 +16,22 @@ Template 2 - Lambda and DynamoDb:
 - Python 3.7, timeout 10 seconds
 - Environment variables: TABLE_NAME, TABLE_REGION, LOG_LEVEL.
 
-After deployed stack populate the DynamoDb database with the following data:
+After deployed stack populate the DynamoDb database with the following data using the CLI:
+### Bash
+``` bash
+aws dynamodb put-item \
+--table-name CustomerInfoTable \
+--item '{
+  "City": {"S": "London"}, 
+  "Country": {"S": "United Kingdom"}, 
+  "FirstName": {"S": "John"}, 
+  "LastName": {"S": "Doe"}, 
+  "PhoneNumber": {"S": "+441234567890"}
+  }' \
 ```
-{
-  "City": "London",
-  "Country": "United Kingdom",
-  "FirstName": "John",
-  "LastName": "Doe",
-  "PhoneNumber": "+441234567890"
-}
+### Powershell:
+``` powershell
+aws dynamodb put-item --table-name CustomerInfoTable --item '{\"City\": {\"S\": \"London\"}, \"Country\":{\"S\": \"United Kingdom\"}, \"FirstName\": {\"S\": \"John\"}, \"LastName\": {\"S\": \"Doe\"}, \"PhoneNumber\": {\"S\": \"+441234567890\"}}'
 ```
 and run the lambda with the following test event:
 ```
