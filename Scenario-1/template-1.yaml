@@ -59,20 +59,15 @@ Resources:
       Role: !GetAtt rLambdaFunctionRole.Arn
       DeploymentPreference:
         Type: AllAtOnce
-#        Alarms:
-#        - !Ref rLambdaFunctionAliasErrorAlarm
-#        - !Ref rLambdaFunctionVersionErrorAlarm
+        Alarms:
+        - !Ref rLambdaFunctionAliasErrorAlarm
+        - !Ref rLambdaFunctionVersionErrorAlarm
 
   rLambdaFunctionAliasErrorAlarm:
     Type: 'AWS::CloudWatch::Alarm'
     Properties:
       AlarmDescription: Lambda Function Error > 0
       ComparisonOperator: GreaterThanThreshold
-      Dimensions:
-        - Name: Resource
-          Value: !Sub '${rLambdaFunction}:${pFunctionAliasName}'
-        - Name: FunctionName
-          Value: !Ref rLambdaFunction
       EvaluationPeriods: 1
       MetricName: Errors
       Namespace: AWS/Lambda
@@ -85,11 +80,6 @@ Resources:
     Properties:
       AlarmDescription: Lambda Function Error > 0
       ComparisonOperator: GreaterThanThreshold
-      Dimensions:
-        - Name: Resource
-          Value: !GetAtt rLambdaFunction.Arn
-        - Name: FunctionName
-          Value: !Ref rLambdaFunction
       EvaluationPeriods: 1
       MetricName: Errors
       Namespace: AWS/Lambda
