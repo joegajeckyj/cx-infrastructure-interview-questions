@@ -53,7 +53,7 @@ Resources:
       CodeUri: ./src
       Role: !GetAtt rLambdaFunctionRole.Arn
       DeploymentPreference:
-        Type: AllAtOnce
+        Type: Linear10PercentEvery10Minutes
         Alarms:
         - !Ref rLambdaFunctionAliasErrorAlarm
         - !Ref rLambdaFunctionVersionErrorAlarm
@@ -74,6 +74,7 @@ Resources:
       Period: 300
       Statistic: Sum
       Threshold: 0
+      TreatMissingData: notBreaching
 
   rLambdaFunctionVersionErrorAlarm:
     Type: 'AWS::CloudWatch::Alarm'
@@ -91,6 +92,7 @@ Resources:
       Period: 300
       Statistic: Sum
       Threshold: 0
+      TreatMissingData: notBreaching
 Outputs:
   oLambdaFunctionName:
     Description: Name of the Lambda Function
