@@ -7,14 +7,6 @@ Parameters:
     Type: String
     Default: logfunction
     AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
-  pArtifactS3BucketName:
-    Description: Artifact S3 Bucket Name.
-    Type: String
-    Default: jrg-ecs-s3
-  pArtifactS3Key:
-    Description: Enter the parameter name for the stored Artifact S3 Key.
-    Type: AWS::SSM::Parameter::Value<String>
-    Default: lambda-function-zip
   pLogLevel:
     Description: Enter the log level for the lambda function.
     Type: String
