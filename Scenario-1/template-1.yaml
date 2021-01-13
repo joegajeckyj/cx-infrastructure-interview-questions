@@ -68,6 +68,7 @@ Resources:
     Properties:
       AlarmDescription: Lambda Function Error > 0
       ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
       EvaluationPeriods: 1
       MetricName: Errors
       Namespace: AWS/Lambda
@@ -80,6 +81,7 @@ Resources:
     Properties:
       AlarmDescription: Lambda Function Error > 0
       ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
       EvaluationPeriods: 1
       MetricName: Errors
       Namespace: AWS/Lambda
