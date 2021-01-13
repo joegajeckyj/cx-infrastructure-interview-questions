@@ -1,7 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
-Transform: 'AWS::Serverless-2016-10-31'
+Transform: AWS::Serverless-2016-10-31
 Description: ECS Infrastructure Interview - Joe Gajeckyj
-
 Parameters:
   pFunctionAliasName:
     Description: Function Alias Name.
@@ -11,93 +10,97 @@ Parameters:
   pArtifactS3BucketName:
     Description: Artifact S3 Bucket Name.
     Type: String
-    Default: jrg-ecs-bucket
+    Default: jrg-ecs-s3
   pArtifactS3Key:
     Description: Enter the parameter name for the stored Artifact S3 Key.
-    Type: 'AWS::SSM::Parameter::Value<String>'
+    Type: AWS::SSM::Parameter::Value<String>
     Default: lambda-function-zip
   pLogLevel:
     Description: Enter the log level for the lambda function.
     Type: String
     Default: DEBUG
     AllowedValues:
-      - DEBUG
-      - INFO
-      - WARNING
-      - ERROR
-      - CRITICAL
-
+    - DEBUG
+    - INFO
+    - WARNING
+    - ERROR
+    - CRITICAL
 Resources:
   rLambdaFunctionRole:
-    Type: 'AWS::IAM::Role'
+    Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - 'sts:AssumeRole'
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
       RoleName: lambda-function-role
       Path: /
       Policies:
-        - PolicyName: allow-logging
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - 'logs:CreateLogGroup'
-                  - 'logs:CreateLogStream'
-                  - 'logs:PutLogEvents'
-                Resource: 'arn:aws:logs:*:*:*'
-
+      - PolicyName: allow-logging
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: arn:aws:logs:*:*:*
   rLambdaFunction:
-    Type: 'AWS::Serverless::Function'
+    Type: AWS::Serverless::Function
     Properties:
-      AutoPublishAlias: !Ref pFunctionAliasName
+      AutoPublishAlias:
+        Ref: pFunctionAliasName
       Handler: lambda.handler
       Runtime: python3.8
       Environment:
         Variables:
-          LOG_LEVEL: !Ref pLogLevel
-      CodeUri: ./src
-      Role: !GetAtt rLambdaFunctionRole.Arn
+          LOG_LEVEL:
+            Ref: pLogLevel
+      CodeUri: s3://jrg-ecs-s3/745095c10562bf7ca20a11e8db2d1732
+      Role:
+        Fn::GetAtt:
+        - rLambdaFunctionRole
+        - Arn
       DeploymentPreference:
         Type: AllAtOnce
-#        Alarms:
-#        - !Ref rLambdaFunctionAliasErrorAlarm
-#        - !Ref rLambdaFunctionVersionErrorAlarm
-
   rLambdaFunctionAliasErrorAlarm:
-    Type: 'AWS::CloudWatch::Alarm'
+    Type: AWS::CloudWatch::Alarm
     Properties:
       AlarmDescription: Lambda Function Error > 0
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
-        - Name: Resource
-          Value: !Sub '${rLambdaFunction}:${pFunctionAliasName}'
-        - Name: FunctionName
-          Value: !Ref rLambdaFunction
+      - Name: Resource
+        Value:
+          Fn::Sub: ${rLambdaFunction}:${pFunctionAliasName}
+      - Name: FunctionName
+        Value:
+          Ref: rLambdaFunction
       EvaluationPeriods: 1
       MetricName: Errors
       Namespace: AWS/Lambda
       Period: 300
       Statistic: Sum
       Threshold: 0
-
   rLambdaFunctionVersionErrorAlarm:
-    Type: 'AWS::CloudWatch::Alarm'
+    Type: AWS::CloudWatch::Alarm
     Properties:
       AlarmDescription: Lambda Function Error > 0
       ComparisonOperator: GreaterThanThreshold
       Dimensions:
-        - Name: Resource
-          Value: !GetAtt rLambdaFunction.Arn
-        - Name: FunctionName
-          Value: !Ref rLambdaFunction
+      - Name: Resource
+        Value:
+          Fn::GetAtt:
+          - rLambdaFunction
+          - Arn
+      - Name: FunctionName
+        Value:
+          Ref: rLambdaFunction
       EvaluationPeriods: 1
       MetricName: Errors
       Namespace: AWS/Lambda
@@ -107,5 +110,5 @@ Resources:
 Outputs:
   oLambdaFunctionName:
     Description: Name of the Lambda Function
-    Value: !Ref rLambdaFunction
-
+    Value:
+      Ref: rLambdaFunction
