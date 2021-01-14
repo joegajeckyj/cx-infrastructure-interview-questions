@@ -74,7 +74,6 @@ Resources:
       Period: 300
       Statistic: Sum
       Threshold: 0
-      TreatMissingData: notBreaching
 
   rLambdaFunctionVersionErrorAlarm:
     Type: 'AWS::CloudWatch::Alarm'
@@ -94,7 +93,6 @@ Resources:
       Period: 300
       Statistic: Sum
       Threshold: 0
-      TreatMissingData: notBreaching
 Outputs:
   oLambdaFunctionName:
     Description: Name of the Lambda Function
