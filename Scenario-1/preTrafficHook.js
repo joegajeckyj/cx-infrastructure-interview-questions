@@ -54,7 +54,7 @@ exports.handler = (event, context, callback) => {
 			//		"statusCode": 200,
 			//		"body": 51
 			// }
-			if(JSON.stringify(result) == '"Response": "Sucessfully executed Scenario 1 Lambda!"'){	
+			if(JSON.stringify(result) == "Response: Sucessfully executed Scenario 1 Lambda!"{	
 				lambdaResult = "Succeeded";
 				console.log ("Validation testing succeeded!");
 			}
