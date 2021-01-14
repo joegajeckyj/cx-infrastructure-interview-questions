@@ -54,6 +54,8 @@ Resources:
       Role: !GetAtt rLambdaFunctionRole.Arn
       DeploymentPreference:
         Type: Linear10PercentEvery10Minutes
+        Hooks:
+          PreTraffic: !Ref preTrafficHook
         Alarms:
         - !Ref rLambdaFunctionAliasErrorAlarm
         - !Ref rLambdaFunctionVersionErrorAlarm
@@ -93,8 +95,38 @@ Resources:
       Period: 300
       Statistic: Sum
       Threshold: 0
+
+  preTrafficHook:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: preTrafficHook.handler
+      Policies:
+        - Version: "2012-10-17"
+          Statement: 
+          - Effect: "Allow"
+            Action: 
+              - "codedeploy:PutLifecycleEventHookExecutionStatus"
+            Resource:
+              !Sub 'arn:aws:codedeploy:${AWS::Region}:${AWS::AccountId}:deploymentgroup:${ServerlessDeploymentApplication}/*'
+        - Version: "2012-10-17"
+          Statement: 
+          - Effect: "Allow"
+            Action: 
+              - "lambda:InvokeFunction"
+            Resource: !Ref rLambdaFunction.Version
+      Runtime: nodejs6.10
+      FunctionName: 'CodeDeployHook_preTrafficHook'
+      DeploymentPreference:
+        Enabled: false
+      Timeout: 5
+      Environment:
+        Variables:
+          NewVersion: !Ref rLambdaFunction.Version
 Outputs:
   oLambdaFunctionName:
     Description: Name of the Lambda Function
     Value: !Ref rLambdaFunction
+  oLambdaFunctionName:
+    Description: Version Lambda Function
+    Value: !Ref rLambdaFunction.Version
 
