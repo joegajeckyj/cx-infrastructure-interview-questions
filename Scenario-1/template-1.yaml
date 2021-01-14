@@ -114,7 +114,7 @@ Resources:
             Action: 
               - "lambda:InvokeFunction"
             Resource: !Ref rLambdaFunction.Version
-      Runtime: nodejs6.10
+      Runtime: nodejs12.x
       FunctionName: 'CodeDeployHook_preTrafficHook'
       DeploymentPreference:
         Enabled: false
