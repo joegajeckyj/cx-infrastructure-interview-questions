@@ -10,6 +10,6 @@ log = logging.getLogger(__name__)
 
 def handler(event, context):
     log.debug("Received event {}".format(event))
-    log.debug("Testing Release 1")
+    log.debug("Received context {}".format(context))
     log.info("Lambda executed")
     return {"Response":f"Sucessfully executed Scenario 1 Lambda!"}
