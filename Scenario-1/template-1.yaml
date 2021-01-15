@@ -73,9 +73,10 @@ Resources:
       EvaluationPeriods: 1
       MetricName: Errors
       Namespace: AWS/Lambda
-      Period: 300
+      Period: 1200
       Statistic: Sum
       Threshold: 0
+      TreatMissingData: notBreaching
 
   rLambdaFunctionVersionErrorAlarm:
     Type: 'AWS::CloudWatch::Alarm'
@@ -92,9 +93,10 @@ Resources:
       EvaluationPeriods: 1
       MetricName: Errors
       Namespace: AWS/Lambda
-      Period: 300
+      Period: 1200
       Statistic: Sum
       Threshold: 0
+      TreatMissingData: notBreaching
 
   preTrafficHook:
     Type: AWS::Serverless::Function
