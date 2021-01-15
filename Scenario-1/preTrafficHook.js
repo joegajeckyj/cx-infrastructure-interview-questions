@@ -46,16 +46,15 @@ exports.handler = (event, context, callback) => {
 		}
 		else{	// successful response
 			var result = JSON.parse(data.Payload);
-			console.log(JSON.stringify(result));
-			console.log(result)
-			console.log('{"Response":"Sucessfully executed Scenario 1 Lambda!"}')
+			console.log(JSON.stringify(result).includes('Sucessfully'));
+			console.log(JSON.stringify(result))
 			// Check the response for valid results
 			// The response will be a JSON payload with statusCode and body properties. ie:
 			// {
 			//		"statusCode": 200,
 			//		"body": 51
 			// }
-			if(JSON.stringify(result) == '{"Response":"Sucessfully executed Scenario 1 Lambda!"}'){	
+			if(JSON.stringify(result).includes('Sucessfully')){	
 				lambdaResult = "Succeeded";
 				console.log ("Validation testing succeeded!");
 			}
