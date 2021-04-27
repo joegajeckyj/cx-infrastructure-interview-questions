@@ -2,19 +2,6 @@ AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 Description: ECS Infrastructure Interview - Joe Gajeckyj
 Parameters:
-  pFunctionAliasName:
-    Description: Function Alias Name.
-    Type: String
-    Default: logfunction
-    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
-  pArtifactS3BucketName:
-    Description: Artifact S3 Bucket Name.
-    Type: String
-    Default: jrg-ecs-s3
-  pArtifactS3Key:
-    Description: Enter the parameter name for the stored Artifact S3 Key.
-    Type: AWS::SSM::Parameter::Value<String>
-    Default: lambda-function-zip
   pLogLevel:
     Description: Enter the log level for the lambda function.
     Type: String
@@ -54,8 +41,7 @@ Resources:
   rLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
-      AutoPublishAlias:
-        Ref: pFunctionAliasName
+      AutoPublishAlias: live
       Handler: lambda.handler
       Runtime: python3.8
       Environment:
@@ -68,7 +54,13 @@ Resources:
         - rLambdaFunctionRole
         - Arn
       DeploymentPreference:
-        Type: AllAtOnce
+        Type: Linear10PercentEvery2Minutes
+        Hooks:
+          PreTraffic:
+            Ref: preTrafficHook
+        Alarms:
+        - Ref: rLambdaFunctionAliasErrorAlarm
+        - Ref: rLambdaFunctionVersionErrorAlarm
   rLambdaFunctionAliasErrorAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
@@ -77,16 +69,17 @@ Resources:
       Dimensions:
       - Name: Resource
         Value:
-          Fn::Sub: ${rLambdaFunction}:${pFunctionAliasName}
+          Fn::Sub: ${rLambdaFunction}:live
       - Name: FunctionName
         Value:
           Ref: rLambdaFunction
       EvaluationPeriods: 1
       MetricName: Errors
       Namespace: AWS/Lambda
-      Period: 300
+      Period: 1200
       Statistic: Sum
       Threshold: 0
+      TreatMissingData: notBreaching
   rLambdaFunctionVersionErrorAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
@@ -95,20 +88,53 @@ Resources:
       Dimensions:
       - Name: Resource
         Value:
-          Fn::GetAtt:
-          - rLambdaFunction
-          - Arn
+          Fn::Sub: ${rLambdaFunction}:live
       - Name: FunctionName
         Value:
           Ref: rLambdaFunction
+      - Name: ExecutedVersion
+        Value:
+          Fn::GetAtt:
+          - rLambdaFunction
+          - Version.Version
       EvaluationPeriods: 1
       MetricName: Errors
       Namespace: AWS/Lambda
-      Period: 300
+      Period: 1200
       Statistic: Sum
       Threshold: 0
+      TreatMissingData: notBreaching
+  preTrafficHook:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: preTrafficHook.handler
+      Policies:
+      - Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - codedeploy:PutLifecycleEventHookExecutionStatus
+          Resource:
+            Fn::Sub: arn:aws:codedeploy:${AWS::Region}:${AWS::AccountId}:deploymentgroup:${ServerlessDeploymentApplication}/*
+      - Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - lambda:InvokeFunction
+          Resource:
+            Ref: rLambdaFunction.Version
+      Runtime: nodejs12.x
+      FunctionName: CodeDeployHook_preTrafficHook
+      DeploymentPreference:
+        Enabled: false
+      Timeout: 5
+      Environment:
+        Variables:
+          NewVersion:
+            Ref: rLambdaFunction.Version
+      CodeUri: preTrafficHook
 Outputs:
   oLambdaFunctionName:
-    Description: Name of the Lambda Function
+    Description: Version Lambda Function
     Value:
-      Ref: rLambdaFunction
+      Ref: rLambdaFunction.Version
