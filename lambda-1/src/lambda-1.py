@@ -12,4 +12,4 @@ def handler(event, context):
     log.debug("Received event {}".format(event))
     log.debug("Testing new version {}".format(context.function_version))
     log.info("Lambda executed")
-    return {"Response":f"Sucessfully executed Scenario 1 Lambda!"}
+    return {"Response":f"Sucessfully executed Lambda-1!"}

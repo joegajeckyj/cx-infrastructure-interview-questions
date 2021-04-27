@@ -6,6 +6,8 @@ import boto3.session
 
 from botocore.config import Config
 
+LambdaFunction = os.environ['FUNCTION_NAME']
+
 def lambda_local(name):
     lambda_client = boto3.client('lambda',
                                         endpoint_url="http://127.0.0.1:3001",
@@ -24,6 +26,6 @@ def lambda_local(name):
 
 
 def test_lambda():
-    data = lambda_local("rLambdaFunction")
-    expected = "Sucessfully executed Scenario 1 Lambda!"
+    data = lambda_local(LambdaFunction)
+    expected = "Sucessfully executed Lambda-1!"
     assert data == expected

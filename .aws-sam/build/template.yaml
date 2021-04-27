@@ -57,7 +57,7 @@ Resources:
         Type: Linear10PercentEvery2Minutes
         Hooks:
           PreTraffic:
-            Ref: preTrafficHook
+            Fn::RefrPpreTrafficHook: ''
         Alarms:
         - Ref: rLambdaFunctionAliasErrorAlarm
         - Ref: rLambdaFunctionVersionErrorAlarm
@@ -104,7 +104,7 @@ Resources:
       Statistic: Sum
       Threshold: 0
       TreatMissingData: notBreaching
-  preTrafficHook:
+  rPreTrafficHook:
     Type: AWS::Serverless::Function
     Properties:
       Handler: preTrafficHook.handler
@@ -124,7 +124,7 @@ Resources:
           Resource:
             Ref: rLambdaFunction.Version
       Runtime: nodejs12.x
-      FunctionName: CodeDeployHook_preTrafficHook
+      FunctionName: CodeDeployHook_rPreTrafficHook
       DeploymentPreference:
         Enabled: false
       Timeout: 5
@@ -132,7 +132,7 @@ Resources:
         Variables:
           NewVersion:
             Ref: rLambdaFunction.Version
-      CodeUri: preTrafficHook
+      CodeUri: rPreTrafficHook
 Outputs:
   oLambdaFunctionName:
     Description: Version Lambda Function
